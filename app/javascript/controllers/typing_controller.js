@@ -5,7 +5,8 @@ export default class extends Controller {
   static values = {
     passageContent: String,
     passageId: Number,
-    nextPassageUrl: String
+    nextPassageUrl: String,
+    bookUrl: String
   }
 
   connect() {
@@ -78,16 +79,53 @@ export default class extends Controller {
     this.updateProgress()
 
     // Check for completion
-    if (typed.length >= content.length && typed === content) {
+    if (typed.length >= content.length) {
       this.complete()
     }
   }
 
   handleKeydown(event) {
-    // Prevent tab from leaving the input
+    // Escape - quit to book page
+    if (event.key === "Escape") {
+      event.preventDefault()
+      window.Turbo.visit(this.bookUrlValue)
+      return
+    }
+
+    // Tab - restart passage
     if (event.key === "Tab") {
       event.preventDefault()
+      this.restart()
+      return
     }
+  }
+
+  restart() {
+    // Reset state
+    this.typedText = ""
+    this.startTime = null
+    this.errors = 0
+    this.totalTyped = 0
+    this.completed = false
+
+    // Clear timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval)
+    }
+
+    // Reset UI
+    this.inputTarget.value = ""
+    this.wpmTarget.textContent = "0"
+    this.accuracyTarget.textContent = "100"
+    this.timerTarget.textContent = "0:00"
+    this.renderPassage()
+
+    // Show hint again
+    if (this.hasHintTarget) {
+      this.hintTarget.classList.remove("hidden")
+    }
+
+    this.focusInput()
   }
 
   updateDisplay() {
