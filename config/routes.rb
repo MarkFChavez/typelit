@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     post :complete, on: :member
   end
 
+  get "typing_stats", to: "typing_stats#index"
+
   # Health check for load balancers
   get "up" => "rails/health#show", as: :rails_health_check
 end
