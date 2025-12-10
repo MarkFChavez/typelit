@@ -1,0 +1,96 @@
+<div class="max-w-4xl mx-auto px-6 py-12">
+  <nav class="mb-8">
+    <%= link_to books_path, class: "text-sm text-stone-500 hover:text-stone-700 flex items-center gap-1" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Library
+    <% end %>
+  </nav>
+
+  <header class="flex gap-8 mb-12">
+    <div class="w-40 flex-shrink-0">
+      <div class="aspect-[2/3] bg-stone-100 rounded-sm overflow-hidden shadow-md">
+        <% if @book.cover_image.attached? %>
+          <%= image_tag @book.cover_image, class: "w-full h-full object-cover" %>
+        <% else %>
+          <div class="w-full h-full flex items-center justify-center text-stone-400">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex-1">
+      <h1 class="text-3xl font-medium tracking-tight text-stone-900 mb-2"><%= @book.title %></h1>
+      <p class="text-lg text-stone-500 mb-6"><%= @book.author %></p>
+
+      <div class="flex items-center gap-4 mb-6">
+        <div class="flex-1 max-w-xs">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-sm text-stone-500">Progress</span>
+            <span class="text-sm font-mono text-stone-700"><%= @book.progress_percentage %>%</span>
+          </div>
+          <div class="h-2 bg-stone-200 rounded-full overflow-hidden">
+            <div class="h-full bg-stone-700 rounded-full transition-all" style="width: <%= @book.progress_percentage %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm text-stone-500 mb-8">
+        <span><%= @book.chapters.count %> chapters</span>
+        <span class="text-stone-300">|</span>
+        <span><%= @book.passages.count %> passages</span>
+        <span class="text-stone-300">|</span>
+        <span><%= number_with_delimiter(@book.total_words) %> words</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <%= link_to continue_book_path(@book), class: "px-5 py-2.5 bg-stone-900 text-white font-medium rounded hover:bg-stone-800 transition-colors" do %>
+          <%= @book.progress_percentage > 0 ? "Continue Reading" : "Start Reading" %>
+        <% end %>
+
+        <%= button_to book_path(@book), method: :delete, data: { turbo_confirm: "Delete this book?" }, class: "px-4 py-2 text-stone-500 hover:text-stone-700 text-sm" do %>
+          Delete
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2 class="text-lg font-medium text-stone-900 mb-4">Chapters</h2>
+    <div class="border border-stone-200 rounded-lg divide-y divide-stone-200">
+      <% @chapters.each do |chapter| %>
+        <% first_passage = chapter.passages.first %>
+        <% completed_count = chapter.passages.joins(:typing_sessions).distinct.count %>
+        <% total_count = chapter.passages.count %>
+
+        <div class="p-4 hover:bg-stone-50 transition-colors">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <% if first_passage %>
+                <%= link_to passage_path(first_passage), class: "font-medium text-stone-900 hover:underline" do %>
+                  <%= chapter.title.presence || "Chapter #{chapter.position}" %>
+                <% end %>
+              <% else %>
+                <span class="font-medium text-stone-400"><%= chapter.title.presence || "Chapter #{chapter.position}" %></span>
+              <% end %>
+              <p class="text-sm text-stone-500 mt-1"><%= chapter.passages.count %> passages</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="w-24">
+                <div class="h-1 bg-stone-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-stone-700 rounded-full" style="width: <%= total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>%"></div>
+                </div>
+              </div>
+              <span class="text-xs text-stone-500 font-mono w-12 text-right"><%= completed_count %>/<%= total_count %></span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

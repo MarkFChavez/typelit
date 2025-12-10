@@ -1,0 +1,116 @@
+<% content_for :hide_header, true %>
+
+<div class="min-h-screen bg-white flex flex-col"
+     data-controller="typing"
+     data-typing-passage-content-value="<%= @passage.content %>"
+     data-typing-passage-id-value="<%= @passage.id %>"
+     data-typing-next-passage-url-value="<%= @passage.next_passage ? passage_path(@passage.next_passage) : book_path(@book) %>">
+
+  <!-- Minimal header -->
+  <header class="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+    <div class="flex items-center gap-3">
+      <%= link_to book_path(@book), class: "p-2 -ml-2 text-gray-400 hover:text-gray-600 transition-colors" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-sm font-medium text-gray-900"><%= @book.title %></h1>
+        <p class="text-xs text-gray-400"><%= @chapter.title.presence || "Chapter #{@chapter.position}" %></p>
+      </div>
+    </div>
+
+    <span class="text-sm text-gray-400">
+      <%= @passage.position %> / <%= @chapter.passages.count %>
+    </span>
+  </header>
+
+  <!-- Stats bar - above text -->
+  <div class="px-6 py-4 border-b border-gray-100">
+    <div class="max-w-2xl mx-auto flex items-center justify-center gap-12">
+      <div class="text-center">
+        <span data-typing-target="wpm" class="font-mono text-3xl font-light text-gray-900">0</span>
+        <span class="block text-xs text-gray-400 mt-1">wpm</span>
+      </div>
+      <div class="text-center">
+        <span class="font-mono text-3xl font-light text-gray-900"><span data-typing-target="accuracy">100</span></span>
+        <span class="block text-xs text-gray-400 mt-1">accuracy</span>
+      </div>
+      <div class="text-center">
+        <span data-typing-target="timer" class="font-mono text-3xl font-light text-gray-900">0:00</span>
+        <span class="block text-xs text-gray-400 mt-1">time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="h-0.5 bg-gray-100">
+    <div data-typing-target="progress" class="h-full bg-gray-900 transition-all duration-150 ease-out" style="width: 0%"></div>
+  </div>
+
+  <!-- Main typing area -->
+  <main class="flex-1 flex flex-col items-center justify-center px-6 py-12 cursor-text" data-action="click->typing#focusInput">
+    <div class="max-w-2xl w-full">
+      <div data-typing-target="display" class="font-mono text-2xl leading-relaxed tracking-wide">
+        <!-- Characters rendered by Stimulus -->
+      </div>
+
+      <textarea data-typing-target="input"
+                data-action="input->typing#handleInput keydown->typing#handleKeydown"
+                class="sr-only"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"></textarea>
+    </div>
+
+    <!-- Hint -->
+    <p data-typing-target="hint" class="text-sm text-gray-300 mt-8">
+      click here to start
+    </p>
+  </main>
+</div>
+
+<style>
+  /* Typed correctly - revealed as black */
+  .typed-correct {
+    color: #1a1a1a;
+  }
+
+  /* Typed incorrectly - red */
+  .typed-incorrect {
+    color: #ef4444;
+  }
+
+  /* Untyped - faded gray */
+  .untyped {
+    color: #d1d5db;
+  }
+
+  /* Newline indicator */
+  .newline-char {
+    font-size: 0.75em;
+    opacity: 0.5;
+  }
+
+  .newline-char.typed-correct {
+    opacity: 0.3;
+  }
+
+  /* Blinking caret cursor */
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: #1a1a1a;
+    margin-left: -1px;
+    margin-right: -1px;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+</style>

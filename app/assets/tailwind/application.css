@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Crimson Pro", Charter, Georgia, Cambria, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+}
