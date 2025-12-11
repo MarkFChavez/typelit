@@ -1,0 +1,29 @@
+<%# locals: (staged_book:, chapter:, index:) %>
+<% included = chapter["included"] %>
+<%= link_to staged_book_path(staged_book, chapter_index: index), method: :patch, data: { turbo_method: :patch }, class: "block p-4 hover:bg-stone-50 transition-colors #{included ? '' : 'bg-stone-50'}" do %>
+  <div class="flex items-start gap-4">
+    <div class="pt-0.5">
+      <% if included %>
+        <div class="w-5 h-5 rounded border-2 border-stone-700 bg-stone-700 flex items-center justify-center">
+          <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      <% else %>
+        <div class="w-5 h-5 rounded border-2 border-stone-300"></div>
+      <% end %>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <h3 class="font-medium <%= included ? 'text-stone-900' : 'text-stone-400 line-through' %>">
+        <%= chapter["title"].presence || "Chapter #{index + 1}" %>
+      </h3>
+      <p class="text-sm text-stone-400 mt-1 line-clamp-2">
+        <%= truncate(chapter["content"].to_s.gsub(/\n+/, ' '), length: 150) %>
+      </p>
+      <p class="text-xs text-stone-400 mt-2">
+        <%= number_with_delimiter(chapter["content"].to_s.split.size) %> words
+      </p>
+    </div>
+  </div>
+<% end %>

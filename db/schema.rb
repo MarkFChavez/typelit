@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_10_125730) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_11_153510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,6 +48,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_125730) do
     t.datetime "uploaded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_books_on_user_id"
   end
 
   create_table "chapters", force: :cascade do |t|
@@ -71,6 +73,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_125730) do
     t.index ["chapter_id"], name: "index_passages_on_chapter_id"
   end
 
+  create_table "staged_books", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.string "author"
+    t.jsonb "chapters_data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_staged_books_on_user_id"
+  end
+
   create_table "typing_sessions", force: :cascade do |t|
     t.bigint "passage_id", null: false
     t.integer "wpm"
@@ -92,7 +104,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_125730) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "books", "users"
   add_foreign_key "chapters", "books"
   add_foreign_key "passages", "chapters"
+  add_foreign_key "staged_books", "users"
   add_foreign_key "typing_sessions", "passages"
 end

@@ -1,4 +1,6 @@
 class Book < ApplicationRecord
+  belongs_to :user
+
   has_many :chapters, -> { order(:position) }, dependent: :destroy
   has_many :passages, through: :chapters
   has_many :typing_sessions, through: :passages
@@ -12,7 +14,7 @@ class Book < ApplicationRecord
     return 0 if passages.empty?
 
     completed_passages = passages.joins(:typing_sessions).distinct.count
-    (completed_passages.to_f / passages.count * 100).round
+    (completed_passages.to_f / passages.count * 100).round(2)
   end
 
   def current_passage

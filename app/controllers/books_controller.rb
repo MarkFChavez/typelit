@@ -2,11 +2,11 @@ class BooksController < ApplicationController
   before_action :set_book, only: [ :show, :destroy, :continue ]
 
   def index
-    @books = Book.all.order(created_at: :desc)
+    @books = current_user.books.order(created_at: :desc)
   end
 
   def show
-    @pagy, @chapters = pagy(@book.chapters.includes(:passages))
+    @current_passage = @book.current_passage
   end
 
   def new
@@ -25,30 +25,31 @@ class BooksController < ApplicationController
 
     result = EpubParserService.new(epub_file.tempfile).parse
 
-    @book = Book.new(
+    chapters_data = result.chapters.map do |chapter|
+      { "title" => chapter.title, "content" => chapter.content, "included" => true }
+    end
+
+    staged_book = current_user.staged_books.build(
       title: result.title,
       author: result.author,
-      uploaded_at: Time.current
+      chapters_data: chapters_data
     )
 
-    if @book.save
-      # Attach cover image if present
+    if staged_book.save
       if result.cover
-        @book.cover_image.attach(
+        staged_book.cover_image.attach(
           io: StringIO.new(result.cover[:data]),
           filename: result.cover[:filename],
           content_type: result.cover[:media_type]
         )
       end
 
-      # Attach original epub for reference
-      @book.epub_file.attach(epub_file)
+      staged_book.epub_file.attach(epub_file)
 
-      # Create chapters and passages
-      create_chapters_and_passages(result.chapters)
-
-      redirect_to @book, notice: "Book uploaded successfully!"
+      redirect_to staged_book
     else
+      @book = Book.new
+      @book.errors.add(:base, "Error staging book")
       render :new, status: :unprocessable_entity
     end
   rescue StandardError => e
@@ -75,24 +76,6 @@ class BooksController < ApplicationController
   private
 
   def set_book
-    @book = Book.find(params[:id])
-  end
-
-  def create_chapters_and_passages(chapters_data)
-    chapters_data.each_with_index do |chapter_data, chapter_index|
-      chapter = @book.chapters.create!(
-        title: chapter_data.title,
-        position: chapter_index + 1
-      )
-
-      passages = PassageSplitterService.new(chapter_data.content).split
-
-      passages.each_with_index do |content, passage_index|
-        chapter.passages.create!(
-          content: content,
-          position: passage_index + 1
-        )
-      end
-    end
+    @book = current_user.books.find(params[:id])
   end
 end

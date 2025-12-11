@@ -1,0 +1,143 @@
+<div class="min-h-screen bg-amber-50/50 pb-32">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <nav class="mb-6">
+      <%= link_to books_path, class: "text-sm text-stone-500 hover:text-stone-700 flex items-center gap-1" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Cancel
+      <% end %>
+    </nav>
+
+    <!-- Stepper -->
+    <div class="flex items-center justify-center gap-3 mb-8 text-sm">
+      <span class="text-stone-400">Upload</span>
+      <svg class="w-4 h-4 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      <span class="font-medium text-amber-700 bg-amber-100 px-3 py-1 rounded-full">Review Chapters</span>
+      <svg class="w-4 h-4 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      <span class="text-stone-400">Library</span>
+    </div>
+
+    <!-- Warning banner -->
+    <div class="mb-8 p-4 bg-amber-100 border border-amber-200 rounded-lg flex items-center gap-3">
+      <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <p class="text-sm text-amber-800">
+        <span class="font-medium">Review & Select Chapters</span> — This book hasn't been saved yet
+      </p>
+    </div>
+
+    <header class="flex gap-8 mb-8">
+      <div class="w-32 flex-shrink-0">
+        <div class="aspect-[2/3] bg-stone-100 rounded-sm overflow-hidden shadow-md">
+          <% if @staged_book.cover_image.attached? %>
+            <%= image_tag @staged_book.cover_image, class: "w-full h-full object-cover" %>
+          <% else %>
+            <div class="w-full h-full flex items-center justify-center text-stone-400">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex-1">
+        <p class="text-sm text-amber-600 font-medium mb-1">Review</p>
+        <h1 class="text-2xl font-medium tracking-tight text-stone-900 mb-1"><%= @staged_book.title %></h1>
+        <p class="text-stone-500 mb-4"><%= @staged_book.author %></p>
+
+        <div class="text-sm text-stone-500">
+          <span><%= @staged_book.included_chapters.size %> of <%= @staged_book.chapters_data.size %> chapters selected</span>
+          <span class="text-stone-300 mx-2">|</span>
+          <span><%= number_with_delimiter(@staged_book.total_word_count) %> words</span>
+        </div>
+      </div>
+    </header>
+
+  <% if flash[:alert] %>
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <section class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-medium text-stone-900">Select Chapters</h2>
+      <p class="text-sm text-stone-500">Click a chapter to toggle selection</p>
+    </div>
+
+    <% chapters = @staged_book.chapters_data %>
+    <% total_chapters = chapters.size %>
+    <% show_collapsed = total_chapters > 10 %>
+
+    <div class="border border-stone-200 rounded-lg divide-y divide-stone-200 bg-white">
+      <% if show_collapsed %>
+        <%# First 5 chapters %>
+        <% chapters.first(5).each_with_index do |chapter, index| %>
+          <%= render "staged_books/chapter_row", staged_book: @staged_book, chapter: chapter, index: index %>
+        <% end %>
+
+        <%# Middle chapters (collapsible) %>
+        <% middle_chapters = chapters[5...-5] %>
+        <% middle_start_index = 5 %>
+        <details class="group bg-stone-100 border-l-4 border-l-stone-400">
+          <summary class="p-4 cursor-pointer hover:bg-stone-200 transition-colors list-none flex items-center gap-3 text-stone-600">
+            <svg class="w-4 h-4 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-sm font-medium">Show <%= middle_chapters.size %> more chapters</span>
+            <span class="text-xs text-stone-400">(main content)</span>
+          </summary>
+          <div class="divide-y divide-stone-200 border-t border-stone-300 bg-white">
+            <% middle_chapters.each_with_index do |chapter, i| %>
+              <%= render "staged_books/chapter_row", staged_book: @staged_book, chapter: chapter, index: middle_start_index + i %>
+            <% end %>
+          </div>
+        </details>
+
+        <%# Last 5 chapters %>
+        <% last_5_start_index = total_chapters - 5 %>
+        <% chapters.last(5).each_with_index do |chapter, i| %>
+          <%= render "staged_books/chapter_row", staged_book: @staged_book, chapter: chapter, index: last_5_start_index + i %>
+        <% end %>
+      <% else %>
+        <%# Show all chapters if 10 or fewer %>
+        <% chapters.each_with_index do |chapter, index| %>
+          <%= render "staged_books/chapter_row", staged_book: @staged_book, chapter: chapter, index: index %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  </div>
+
+  <!-- Sticky footer -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 shadow-lg">
+    <div class="max-w-4xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <%= button_to staged_book_path(@staged_book), method: :delete, class: "px-4 py-2 text-stone-500 hover:text-stone-700 text-sm", data: { turbo_confirm: "Cancel this upload?" } do %>
+            Cancel Upload
+          <% end %>
+          <span class="text-sm text-amber-600 flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+            Not saved yet
+          </span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <p class="text-sm text-stone-500 hidden sm:block">Once saved, you can start typing practice</p>
+          <%= button_to finalize_staged_book_path(@staged_book), method: :post, class: "px-6 py-2.5 bg-stone-900 text-white font-medium rounded hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed", disabled: @staged_book.included_chapters.empty? do %>
+            Save Book
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

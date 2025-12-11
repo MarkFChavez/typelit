@@ -59,41 +59,23 @@
     </div>
   </header>
 
-  <section class="mb-8">
-    <h2 class="text-xl font-medium text-stone-900 mb-4">Chapters</h2>
-    <div class="border border-stone-200 rounded-lg divide-y divide-stone-200">
-      <% @chapters.each do |chapter| %>
-        <% first_passage = chapter.passages.first %>
-        <% completed_count = chapter.passages.joins(:typing_sessions).distinct.count %>
-        <% total_count = chapter.passages.count %>
-
-        <div class="p-4 hover:bg-stone-50 transition-colors">
-          <div class="flex items-center justify-between">
-            <div class="flex-1">
-              <% if first_passage %>
-                <%= link_to passage_path(first_passage), class: "font-medium text-stone-900 hover:underline" do %>
-                  <%= chapter.title.presence || "Chapter #{chapter.position}" %>
-                <% end %>
-              <% else %>
-                <span class="font-medium text-stone-400"><%= chapter.title.presence || "Chapter #{chapter.position}" %></span>
-              <% end %>
-              <p class="text-sm text-stone-500 mt-1"><%= chapter.passages.count %> passages</p>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <div class="w-24">
-                <div class="h-1 bg-stone-200 rounded-full overflow-hidden">
-                  <div class="h-full bg-stone-700 rounded-full" style="width: <%= total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>%"></div>
-                </div>
-              </div>
-              <span class="text-xs text-stone-500 font-mono w-12 text-right"><%= completed_count %>/<%= total_count %></span>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </section>
-
-  <%== @pagy.series_nav %>
+  <% if @current_passage %>
+    <section class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-sm font-medium text-stone-500">Continue from here</span>
+      </div>
+      <h2 class="text-xl font-medium text-stone-900 mb-4">
+        <%= @current_passage.chapter.title.presence || "Chapter #{@current_passage.chapter.position}" %>
+      </h2>
+      <div class="border border-stone-200 border-l-4 border-l-stone-700 rounded-lg p-6 bg-stone-50">
+        <p class="text-sm text-stone-500 mb-3">Passage <%= @current_passage.position %></p>
+        <p class="text-stone-700 line-clamp-3"><%= truncate(@current_passage.content, length: 200) %></p>
+      </div>
+    </section>
+  <% else %>
+    <section class="mb-8">
+      <p class="text-stone-500">No passages in this book.</p>
+    </section>
+  <% end %>
 </div>
 

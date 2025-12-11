@@ -9,6 +9,10 @@ Rails.application.routes.draw do
     get :continue, on: :member
   end
 
+  resources :staged_books, only: [ :show, :update, :destroy ] do
+    post :finalize, on: :member
+  end
+
   resources :passages, only: [ :show ] do
     post :complete, on: :member
   end

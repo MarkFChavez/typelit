@@ -11,7 +11,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
       <% @books.each do |book| %>
         <div class="group">
-          <%= link_to continue_book_path(book), class: "block" do %>
+          <%= link_to book_path(book), class: "block" do %>
             <div class="aspect-[2/3] bg-stone-100 rounded-sm overflow-hidden mb-3 shadow-sm group-hover:shadow-md transition-shadow">
               <% if book.cover_image.attached? %>
                 <%= image_tag book.cover_image, class: "w-full h-full object-cover" %>
