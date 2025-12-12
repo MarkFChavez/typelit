@@ -62,26 +62,46 @@
 
       <!-- Visual UI Preview/Mockup -->
       <div class="hidden sm:block">
-        <div class="bg-stone-800 rounded-lg p-6 border border-stone-700">
-          <!-- Stats Bar -->
-          <div class="flex items-center justify-center gap-8 mb-6 pb-4 border-b border-stone-700">
-            <div class="text-center">
-              <div class="text-white font-mono text-2xl font-light">68</div>
-              <span class="text-stone-500 text-xs">wpm</span>
+        <div class="bg-white rounded-lg overflow-hidden border border-stone-600">
+          <!-- Minimal header -->
+          <div class="px-4 py-3 flex items-center justify-between border-b border-stone-200">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <div>
+                <p class="text-xs font-medium text-stone-900">1984</p>
+                <p class="text-[10px] text-stone-400">Chapter 1</p>
+              </div>
             </div>
-            <div class="text-center">
-              <div class="text-white font-mono text-2xl font-light">97</div>
-              <span class="text-stone-500 text-xs">accuracy</span>
-            </div>
-            <div class="text-center">
-              <div class="text-white font-mono text-2xl font-light">2:34</div>
-              <span class="text-stone-500 text-xs">time</span>
-            </div>
+            <span class="text-xs text-stone-400">3 / 12</span>
           </div>
 
-          <!-- Typing Preview Text -->
-          <div class="font-mono text-sm leading-relaxed">
-            <span class="text-white">It was a bright cold day in April, and the clocks were striking thirteen.</span><span class="inline-block w-0.5 h-4 bg-white ml-px animate-pulse"></span><span class="text-stone-500"> Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors.</span>
+          <!-- Progress bar -->
+          <div class="h-0.5 bg-stone-100">
+            <div class="h-full bg-stone-900 w-3/5"></div>
+          </div>
+
+          <!-- Typing area -->
+          <div class="p-6">
+            <p class="font-mono text-sm leading-relaxed">
+              <span class="text-stone-900">It was a bright cold day in April, and the clocks were striking thirteen.</span><span class="inline-block w-0.5 h-4 bg-stone-900 align-middle animate-pulse"></span><span class="text-stone-300"> Winston Smith, his chin nuzzled into his breast</span>
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div class="px-4 py-2 border-t border-stone-200 flex items-center justify-between text-[10px] text-stone-400">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 bg-stone-100 border border-stone-200 rounded text-[9px] font-mono">Esc</kbd>
+                <span>quit</span>
+              </span>
+              <span class="flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 bg-stone-100 border border-stone-200 rounded text-[9px] font-mono">Tab</kbd>
+                <span>restart</span>
+              </span>
+            </div>
+            <span>TypeLit</span>
           </div>
         </div>
       </div>
