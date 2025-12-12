@@ -4,6 +4,11 @@ class PassagesController < ApplicationController
   def show
     @book = @passage.book
     @chapter = @passage.chapter
+
+    if @book.completed?
+      redirect_to @book, notice: "You've already completed this book."
+      return
+    end
   end
 
   def complete

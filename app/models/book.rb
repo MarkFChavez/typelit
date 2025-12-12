@@ -17,6 +17,10 @@ class Book < ApplicationRecord
     (completed_passages.to_f / passages.count * 100).round(2)
   end
 
+  def completed?
+    passages.any? && progress_percentage == 100
+  end
+
   def current_passage
     passages
       .left_joins(:typing_sessions)

@@ -64,6 +64,11 @@ class BooksController < ApplicationController
   end
 
   def continue
+    if @book.completed?
+      redirect_to @book, notice: "You've already completed this book."
+      return
+    end
+
     passage = @book.current_passage
 
     if passage
