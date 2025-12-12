@@ -13,6 +13,7 @@ export default class extends Controller {
     this.typedText = ""
     this.startTime = null
     this.completed = false
+    this.errorCount = 0
 
     this.renderPassage()
     this.focusInput()
@@ -58,7 +59,17 @@ export default class extends Controller {
       this.startTime = Date.now()
     }
 
+    const previousLength = this.typedText.length
     this.typedText = this.inputTarget.value
+
+    // Track errors only when typing forward (not backspacing)
+    if (this.typedText.length > previousLength) {
+      const newCharIndex = this.typedText.length - 1
+      if (this.typedText[newCharIndex] !== this.passageContentValue[newCharIndex]) {
+        this.errorCount++
+      }
+    }
+
     this.updateDisplay()
     this.updateProgress()
 
@@ -89,6 +100,7 @@ export default class extends Controller {
     this.typedText = ""
     this.startTime = null
     this.completed = false
+    this.errorCount = 0
 
     // Reset UI
     this.inputTarget.value = ""
@@ -162,16 +174,10 @@ export default class extends Controller {
     const standardWords = this.typedText.length / 5
     const wpm = Math.round(standardWords / (durationSeconds / 60))
 
-    // Calculate final accuracy from typed text vs content
-    const content = this.passageContentValue
-    let errors = 0
-    for (let i = 0; i < this.typedText.length; i++) {
-      if (this.typedText[i] !== content[i]) {
-        errors++
-      }
-    }
-    const accuracy = this.typedText.length > 0
-      ? ((this.typedText.length - errors) / this.typedText.length) * 100
+    // Calculate accuracy from tracked errors (includes corrected mistakes)
+    const totalCharsTyped = this.typedText.length + this.errorCount
+    const accuracy = totalCharsTyped > 0
+      ? ((totalCharsTyped - this.errorCount) / totalCharsTyped) * 100
       : 100
 
     // Post results to server

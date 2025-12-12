@@ -72,6 +72,12 @@ class BooksController < ApplicationController
     end
 
     @chapter = @passage.chapter
+
+    # Get previous passage stats
+    prev_passage = @passage.previous_passage
+    prev_session = prev_passage&.typing_sessions&.order(created_at: :desc)&.first
+    @previous_wpm = prev_session&.wpm || 0
+    @previous_accuracy = prev_session&.accuracy&.round || 0
   end
 
   def restart
