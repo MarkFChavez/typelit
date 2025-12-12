@@ -20,6 +20,12 @@ bin/rails db:setup
 bin/rails server
 ```
 
+## Testing
+
+```bash
+bin/test
+```
+
 ## Configuration
 
 Typing parameters (passage length, character replacements, etc.) can be configured in:

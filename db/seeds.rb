@@ -8,6 +8,7 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+# Create test user (sample book is created automatically via after_create callback)
 User.find_or_create_by!(username: "testuser") do |user|
   user.password = "password123"
 end
