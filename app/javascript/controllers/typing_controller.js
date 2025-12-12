@@ -39,9 +39,10 @@ export default class extends Controller {
     this.displayTarget.innerHTML = html
     this.charSpans = this.displayTarget.querySelectorAll("span[data-index]")
 
-    // Create caret element
+    // Create caret element (append once, position with CSS)
     this.caret = document.createElement("span")
     this.caret.className = "caret"
+    this.displayTarget.appendChild(this.caret)
     this.updateCaretPosition()
 
     this.updateProgress()
@@ -155,20 +156,25 @@ export default class extends Controller {
   }
 
   updateCaretPosition() {
-    // Remove caret from current position
-    if (this.caret.parentNode) {
-      this.caret.parentNode.removeChild(this.caret)
-    }
-
     const position = this.typedText.length
 
     if (position < this.charSpans.length) {
-      // Insert caret before the current character
       const currentSpan = this.charSpans[position]
-      currentSpan.parentNode.insertBefore(this.caret, currentSpan)
-    } else {
-      // At the end, append caret after last character
-      this.displayTarget.appendChild(this.caret)
+      const containerRect = this.displayTarget.getBoundingClientRect()
+      const spanRect = currentSpan.getBoundingClientRect()
+
+      this.caret.style.left = `${spanRect.left - containerRect.left}px`
+      this.caret.style.top = `${spanRect.top - containerRect.top}px`
+      this.caret.style.height = `${spanRect.height}px`
+    } else if (this.charSpans.length > 0) {
+      // At end - position after last character
+      const lastSpan = this.charSpans[this.charSpans.length - 1]
+      const containerRect = this.displayTarget.getBoundingClientRect()
+      const spanRect = lastSpan.getBoundingClientRect()
+
+      this.caret.style.left = `${spanRect.right - containerRect.left}px`
+      this.caret.style.top = `${spanRect.top - containerRect.top}px`
+      this.caret.style.height = `${spanRect.height}px`
     }
   }
 

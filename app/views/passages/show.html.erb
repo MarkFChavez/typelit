@@ -125,16 +125,18 @@
     opacity: 0.3;
   }
 
-  /* Blinking caret cursor */
+  /* Display container needs relative positioning for absolute caret */
+  [data-typing-target="display"] {
+    position: relative;
+  }
+
+  /* Blinking caret cursor - positioned absolutely to avoid text reflow */
   .caret {
-    display: inline-block;
+    position: absolute;
     width: 2px;
-    height: 1.2em;
     background-color: #1a1a1a;
-    margin-left: -1px;
-    margin-right: -1px;
-    vertical-align: text-bottom;
     animation: blink 1s step-end infinite;
+    pointer-events: none;
   }
 
   @keyframes blink {
