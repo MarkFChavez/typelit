@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["display", "input", "wpm", "accuracy", "progress", "timer", "hint"]
+  static targets = ["display", "input", "wpm", "accuracy", "progress", "timer", "hint", "loading"]
   static values = {
     passageContent: String,
     passageId: Number,
@@ -219,6 +219,11 @@ export default class extends Controller {
   async complete() {
     this.completed = true
     clearInterval(this.timerInterval)
+
+    // Show loading indicator
+    if (this.hasLoadingTarget) {
+      this.loadingTarget.classList.remove("hidden")
+    }
 
     const durationSeconds = Math.round((Date.now() - this.startTime) / 1000)
     const standardWords = this.typedText.length / 5
